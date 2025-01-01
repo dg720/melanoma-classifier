@@ -59,6 +59,7 @@ for index in df.index:
         # the position in the array -> each category is integer between 0 to 8
 
         ind = values.index(1.0)
+        # looks for position of index with value 1 (i.e. which category)
 
         # let's start with only 3 categories :
 
@@ -67,22 +68,16 @@ for index in df.index:
 
             resized64 = cv2.resize(img, input_shape64, interpolation=cv2.INTER_AREA)
             allImages64.append(resized64)
+            # coloured resized images
 
             grayImage64 = cv2.cvtColor(resized64, cv2.COLOR_BGR2GRAY)
             gray64.append(grayImage64)
-
-            print(
-                "Filename "
-                + name
-                + " is : "
-                + str(ind)
-                + " shape :"
-                + str(resized64.shape)
-            )
+            # greyscale image
 
 
-# print(len(allImages64))
-# print(len(allLables))
+print("Complete dimensions:")
+print(len(allImages64))
+print(len(allLables))
 
 
 allImages64 = np.array(allImages64)
