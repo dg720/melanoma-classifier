@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 from keras.callbacks import ModelCheckpoint
+# only save successful trained models
 
 # load the data
 
@@ -65,7 +66,7 @@ model.add(
         activation="relu",
     )
 )
-model.add(Dropout(0.5))
+model.add(Dropout(0.5))  # 50% dropout
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
 
@@ -82,15 +83,15 @@ print(model.summary())
 
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
-batch = 32
+batch = 32  # can enlarge if more memory
 epochs = 20
 
-stepsPerEpoch = np.ceil(len(X_train) / batch)
-validationSteps = np.ceil(len(X_test) / batch)
+stepsPerEpoch = int(np.ceil(len(X_train) / batch))
+validationSteps = int(np.ceil(len(X_test) / batch))
 
 # save only the best model
 
-best_model_file = "C:/Data-Sets/Skin-Lesion/best.h5"
+best_model_file = "C:/Data-Sets/Skin-Lesion/best.keras"
 best_model = ModelCheckpoint(
     best_model_file, monitor="val_accuracy", verbose=1, save_best_only=True
 )

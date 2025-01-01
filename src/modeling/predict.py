@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-model_file = "C:/Data-Sets/Skin-Lesion/best.h5"
+model_file = "C:/Data-Sets/Skin-Lesion/best.keras"
 model = tf.keras.models.load_model(model_file)
 print(model.summary())
 
@@ -14,13 +14,14 @@ categories = ["MEL", "NV", "BCC"]
 
 def prepareImage(img):
     resized = cv2.resize(img, input_shape, interpolation=cv2.INTER_AREA)
-    imgResult = np.expand_dims(resized, axis=0)
+    imgResult = np.expand_dims(resized, axis=0)  # becomes (1, 64, 64, 3)
     imgResult = imgResult / 255.0
     return imgResult
 
 
 # load the google image
-imgPath = "TensorFlowProjects\Skin-Lesion\Basal-cell-carcinoma.jpg"
+# imgPath = "C:/Users/dhruv/Documents/melanoma_classifier/data/external/Basal-cell-carcinoma.jpg"
+imgPath = "C:/Users/dhruv/Documents/melanoma_classifier/data/external/4.bmp"
 img = cv2.imread(imgPath)
 
 imgForModel = prepareImage(img)
