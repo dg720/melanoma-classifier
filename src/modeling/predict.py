@@ -5,7 +5,7 @@ import cv2
 
 model_file = "C:/Data-Sets/Skin-Lesion/best.keras"
 model = tf.keras.models.load_model(model_file)
-print(model.summary())
+# print(model.summary())
 
 input_shape = (64, 64)
 batch = 32
@@ -21,7 +21,7 @@ def prepareImage(img):
 
 # load the google image
 # imgPath = "C:/Users/dhruv/Documents/melanoma_classifier/data/external/Basal-cell-carcinoma.jpg"
-imgPath = "C:/Users/dhruv/Documents/melanoma_classifier/data/external/4.bmp"
+imgPath = "C:/Users/dhruv/Documents/melanoma_classifier/data/external/5.bmp"
 img = cv2.imread(imgPath)
 
 imgForModel = prepareImage(img)
@@ -30,14 +30,23 @@ imgForModel = prepareImage(img)
 resultArray = model.predict(imgForModel, batch_size=batch, verbose=1)
 answers = np.argmax(resultArray, axis=1)
 
-print(answers)
+# print(answers)
 
 text = categories[answers[0]]
 print("Predicted answer is : " + text)
 
-font = cv2.FONT_HERSHEY_COMPLEX
-cv2.putText(img, text, (0, 20), font, 0.5, (209, 19, 77), 2)
+# font = cv2.FONT_HERSHEY_COMPLEX
+# cv2.putText(img, text, (0, 20), font, 0.5, (209, 19, 77), 2)
 
-cv2.imshow("img", img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow("img", img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+
+def get_predictions(input_img):
+    imgForModel = prepareImage(input_img)
+    resultArray = model.predict(imgForModel, batch_size=32, verbose=1)
+    answers = np.argmax(resultArray, axis=1)
+    print(answers)
+    text = categories[answers[0]]
+    return text
