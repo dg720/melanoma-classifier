@@ -1,8 +1,20 @@
-# https://www.kaggle.com/datasets/andrewmvd/isic-2019?select=ISIC_2019_Training_GroundTruth.csv
+"""Utility script to load, filter, and persist the ISIC 2019 image dataset.
 
+This module reads the Kaggle ISIC 2019 ground-truth CSV, loads the
+corresponding dermoscopic images, filters for the first three diagnostic
+classes, and stores the resized arrays as NumPy archives for downstream
+modeling tasks.
+
+The script is intentionally imperative and executes on import. It mirrors the
+original notebook flow, so it should be executed as a one-off preprocessing
+step rather than being treated as a reusable library module.
+"""
+
+import cv2
 import numpy as np
 import pandas as pd
-import cv2
+
+# https://www.kaggle.com/datasets/andrewmvd/isic-2019?select=ISIC_2019_Training_GroundTruth.csv
 
 csv_file = "C:/Data-Sets/Skin-Lesion/ISIC_2019_Training_GroundTruth.csv"
 df = pd.read_csv(csv_file, header=0)
@@ -25,13 +37,14 @@ print("categories : " + str(categories))
 
 # arrays for images and lables
 
-allImages64 = []
-gray64 = []
-allLables = []
+allImages64: list[np.ndarray] = []
+gray64: list[np.ndarray] = []
+allLables: list[int] = []
 input_shape64 = (64, 64)
 
 
 for index in df.index:
+    # ``name`` remains for parity with the CSV schema and for future logging.
     name = df["image"][index]
     fileName = pathToImages + "/" + df["image"][index] + ".jpg"
 
@@ -64,6 +77,8 @@ for index in df.index:
         # let's start with only 3 categories :
 
         if ind == 0 or ind == 1 or ind == 2:
+            # The academic project focuses on the three most prevalent classes to
+            # keep the classification task tractable with limited compute.
             allLables.append(ind)
 
             resized64 = cv2.resize(img, input_shape64, interpolation=cv2.INTER_AREA)
@@ -71,6 +86,8 @@ for index in df.index:
             # coloured resized images
 
             grayImage64 = cv2.cvtColor(resized64, cv2.COLOR_BGR2GRAY)
+            # Store a grayscale version for potential texture-based feature
+            # engineering without incurring extra preprocessing later on.
             gray64.append(grayImage64)
             # greyscale image
 
