@@ -1,27 +1,48 @@
-import tensorflow as tf
-import numpy as np
+"""Prediction utilities and explainability helpers for the CNN classifier."""
+
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
 from lime import lime_image
 from skimage.segmentation import mark_boundaries
-import matplotlib.pyplot as plt
 
 model_file = "C:/Data-Sets/Skin-Lesion/best.keras"
 model = tf.keras.models.load_model(model_file)
 # print(model.summary())
 
-input_shape = (64, 64)
+input_shape: tuple[int, int] = (64, 64)
 batch = 32
 categories = ["MEL", "NV", "BCC"]
 
 
-def prepareImage(img):
+def prepareImage(img: np.ndarray) -> np.ndarray:
+    """Resize and normalise an image for model inference.
+
+    Args:
+        img (np.ndarray): Raw OpenCV image in BGR channel order.
+
+    Returns:
+        np.ndarray: Float32 array scaled to ``[0, 1]`` with spatial dimensions
+        matching ``input_shape``.
+    """
+
     resized = cv2.resize(img, input_shape, interpolation=cv2.INTER_AREA)
     # imgResult = np.expand_dims(resized, axis=0)  # becomes (1, 64, 64, 3)
     imgResult = resized / 255.0
     return imgResult
 
 
-def get_predictions(input_img):
+def get_predictions(input_img: np.ndarray) -> np.ndarray:
+    """Return class probabilities for a single RGB dermoscopic image.
+
+    Args:
+        input_img (np.ndarray): Image array in ``H x W x C`` format.
+
+    Returns:
+        np.ndarray: Softmax probabilities for each class in ``categories``.
+    """
+
     processed_img = np.expand_dims(prepareImage(input_img), axis=0)
     resultArray = model.predict(processed_img, batch_size=32)
     # answers = np.argmax(resultArray, axis=1)
@@ -52,6 +73,8 @@ cv2.imshow("img", img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
+# Matplotlib expects RGB ordering; OpenCV loads BGR, so perform an in-place
+# channel swap on a copy to avoid mutating the model input.
 im2 = imgForModel.copy()
 im2[:, :, 0] = imgForModel[:, :, 2]
 im2[:, :, 2] = imgForModel[:, :, 0]
@@ -60,6 +83,8 @@ plt.imshow(im2)
 plt.show()
 
 # LIME explainer
+# LIME perturbs the input image and fits a local surrogate model to highlight
+# the pixels that most influenced the network's decision.
 explainer = lime_image.LimeImageExplainer()
 explanation = explainer.explain_instance(
     imgForModel,  # Input image

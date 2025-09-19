@@ -1,12 +1,14 @@
+"""End-to-end convolutional neural network training script."""
+
+import cv2
 import numpy as np
 import pandas as pd
-import cv2
-
+from keras.callbacks import ModelCheckpoint
+from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
+from keras.models import Sequential
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
-from keras.callbacks import ModelCheckpoint
+
 # only save successful trained models
 
 # load the data
@@ -18,7 +20,7 @@ print(allImages.shape)
 print(allLables.shape)
 
 # categories
-categories = ["MEL", "NV", "BCC"]
+categories: list[str] = ["MEL", "NV", "BCC"]
 
 input_shape = (64, 64, 3)
 numofCategories = len(categories)
@@ -66,11 +68,13 @@ model.add(
         activation="relu",
     )
 )
+# Early dropout combats overfitting due to the limited dataset size.
 model.add(Dropout(0.5))  # 50% dropout
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
 
 model.add(Conv2D(filters=16, kernel_size=(3, 3), padding="same", activation="relu"))
+# A second dropout layer encourages the network to learn distributed features.
 model.add(Dropout(0.5))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 

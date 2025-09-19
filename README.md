@@ -1,79 +1,40 @@
-# Data Project Template
+# Melanoma Classifier
+A lightweight research sandbox for prototyping melanoma image classification workflows.
 
-<a target="_blank" href="https://datalumina.com/">
-    <img src="https://img.shields.io/badge/Datalumina-Project%20Template-2856f7" alt="Datalumina Project" />
-</a>
+## Overview
+This project assembles a reproducible pipeline for researchers exploring dermoscopic image classification. It bundles data preparation, convolutional model training, offline explainability experiments, and an interactive demo surface so experiments can progress without rebuilding infrastructure from scratch.
 
-## Cookiecutter Data Science
-This project template is a simplified version of the [Cookiecutter Data Science](https://cookiecutter-data-science.drivendata.org) template, created to suit the needs of Datalumina and made available as a GitHub template.
+## Architecture
+Dermoscopic images and labels are preprocessed into NumPy archives, which feed a Keras-based convolutional neural network. The trained model is reused for inference experiments and is exposed through a FastAPI application that mounts a Gradio interface for hands-on validation. Optional notebook analyses and reports sit alongside the codebase for exploratory work.
 
-## Adjusting .gitignore
+## Key techniques & patterns
+- NumPy and OpenCV preprocessing to standardise ISIC 2019 images and persist reusable datasets.
+- Keras Sequential CNN with dropout regularisation and early-model checkpointing.
+- LIME-based explainability workflow to visualise class contributions.
+- FastAPI + Gradio integration to deliver a shareable inference playground.
 
-Ensure you adjust the `.gitignore` file according to your project needs. For example, since this is a template, the `/data/` folder is commented out and data will not be exlucded from source control:
+## Limitations & future work
+- File paths are hard-coded for a Windows development machine and require manual edits for other environments.
+- The training script executes on import rather than via a CLI, so automation and parameter tuning are limited.
+- Dataset preparation and prediction scripts run eagerly; wrapping them in functions or notebooks would improve composability and testability.
+- No deployment or monitoring tooling is provided yet.
 
-```plaintext
-# exclude data from source control by default
-# /data/
+## Project structure
+```text
+melanoma-classifier/
+├── data/                     # Raw, interim, processed, and external datasets
+├── models/                   # Saved models and evaluation artifacts
+├── notebooks/                # Experimental notebooks for exploration
+├── reports/                  # Generated figures and reports
+├── src/
+│   ├── config.py             # Central location for future configuration constants
+│   ├── dataset.py            # Scripted preprocessing for ISIC 2019 imagery
+│   ├── features.py           # Placeholder for feature engineering utilities
+│   ├── modeling/
+│   │   ├── gradio_ui.py      # Gradio interface exposing inference results
+│   │   ├── predict.py        # Prediction helpers plus LIME explainability flow
+│   │   ├── run.py            # FastAPI entry point mounting the Gradio demo
+│   │   └── train.py          # CNN training loop and checkpointing logic
+│   └── plots.py              # Placeholder for reusable plotting helpers
+└── requirements.txt          # Python dependencies
 ```
-
-Typically, you want to exclude this folder if it contains either sensitive data that you do not want to add to version control or large files.
-
-## Duplicating the .env File
-To set up your environment variables, you need to duplicate the `.env.example` file and rename it to `.env`. You can do this manually or using the following terminal command:
-
-```bash
-cp .env.example .env # Linux, macOS, Git Bash, WSL
-copy .env.example .env # Windows Command Prompt
-```
-
-This command creates a copy of `.env.example` and names it `.env`, allowing you to configure your environment variables specific to your setup.
-
-
-## Project Organization
-
-```
-├── LICENSE            <- Open-source license if one is chosen
-├── README.md          <- The top-level README for developers using this project
-├── data
-│   ├── external       <- Data from third party sources
-│   ├── interim        <- Intermediate data that has been transformed
-│   ├── processed      <- The final, canonical data sets for modeling
-│   └── raw            <- The original, immutable data dump
-│
-├── models             <- Trained and serialized models, model predictions, or model summaries
-│
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`
-│
-├── references         <- Data dictionaries, manuals, and all other explanatory materials
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
-│
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
-│
-└── src                         <- Source code for this project
-    │
-    ├── __init__.py             <- Makes src a Python module
-    │
-    ├── config.py               <- Store useful variables and configuration
-    │
-    ├── dataset.py              <- Scripts to download or generate data
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    │    
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
-    │
-    ├── plots.py                <- Code to create visualizations 
-    │
-    └── services                <- Service classes to connect with external platforms, tools, or APIs
-        └── __init__.py 
-```
-
---------
